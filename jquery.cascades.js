@@ -6,3 +6,12 @@
  * 
  */
 
+(function($, window, undefined){
+
+  $.fn.cascades = function(options){
+
+    
+
+  }
+
+})(jQuery, window);
