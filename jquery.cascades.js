@@ -31,9 +31,22 @@
      *   ....
      * }
      */
-    run = function(event){
+    runHandler = function(event){
+
+      switch(event.type) {
+        case 'scroll': 
+          console.log($(this).scrollTop());
+        break;
+
+        default:
+          run(event.data);
+        break;
+      }
       
-      $.each(event.data, function(index, cascad){
+    }
+
+    run = function(cascades){
+      $.each(cascades, function(index, cascad){
 
         //Get elements of cascad
         var $cascadElemenet = (cascad.selector !== undefined) ? $(cascad.selector) : console.error("selector in some cascade is undefined!");
@@ -54,14 +67,7 @@
       });
     }
 
-    switch(event_type) {
-      case 'scroll': 
-      break;
-
-      default:
-        this.on(event_type, cascades, run);
-      break;
-    }
+    this.on(event_type, cascades, runHandler);
 
   }
 
