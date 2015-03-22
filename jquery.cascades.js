@@ -8,38 +8,55 @@
 
 (function($, window, undefined){
 
-  $.fn.cascades = function(event_type, cascades){
+  $.fn.cascades = function(event_type, options){
 
 
     /**
      * Run cascades
-     * @param  {object} 
-     * Array of configured cascad object
+     * @event_type  {string} 
+     * Type of event will be triggred
+     * Example: 'scroll', 'click', ...
+     * 
+     * @options  {object} 
+     * Options object
      * 
      * Example:
-     * cascades = {
-     *   {
-     *     selector: "#jQuery_selector_1",
-     *     effect: "SlideUp",
-     *     timeout: 1000,
-     *   },
-     *   {
-     *     selector: "#jQuery_selector_2",
-     *     effect: "SlideDown",
-     *     timeout: 3000,
-     *   }
-     *   ....
+     * options = {
+     *   trigger: 'selector', // Use only for event type 'scroll'. Means an item
+     *                           that will start a cascad of crossing.
+     *   [
+     *     {
+            selector: '.portfolio-slider-block',
+            effect: 'slideUp',
+            timeout: 1000 
+          },
+          {
+            selector: '.work-scheme-block',
+            effect: 'slideUp',
+            timeout: 1000 
+          }
+     *   ]
      * }
      */
     runHandler = function(event){
 
       switch(event.type) {
         case 'scroll': 
-          console.log($(this).scrollTop());
+
+          // Get trigger element
+          var $trigger = (event.data.trigger !== undefined) ? $(event.data.trigger) : console.error("When use event type 'scroll' you must define triger CSS selector");
+
+          var triggerTop = $trigger.offset().top;
+          var scrollTop = $(this).scrollTop();
+
+          if (scrollTop >= triggerTop) {
+            run(event.data.cascade);
+          }
+          
         break;
 
         default:
-          run(event.data);
+          run(event.data.cascade);
         break;
       }
       
@@ -49,25 +66,17 @@
       $.each(cascades, function(index, cascad){
 
         //Get elements of cascad
-        var $cascadElemenet = (cascad.selector !== undefined) ? $(cascad.selector) : console.error("selector in some cascade is undefined!");
-        
-        //For first element in cascad skip timeout
-        if (index == 0) {
-          $cascadElemenet.once(function(){
-            $(this).addClass(cascad.effect);
-          });
-        }else {
-          setTimeout(function(){
-            $cascadElemenet.once(function(){
-              $(this).addClass(cascad.effect);
-            });          
-          }, cascad.timeout);
-        }
-
+        var $cascadElement = (cascad.selector !== undefined) ? $(cascad.selector) : console.error("selector in some cascade is undefined!");
+            
+            $.each($cascadElement, function(i, el){
+              setTimeout(function(){
+                $(el).addClass(cascad.effect);
+              }, cascad.timeout + ( i * cascad.timeout));
+            });
       });
     }
 
-    this.on(event_type, cascades, runHandler);
+    this.on(event_type, options, runHandler);
 
   }
 
