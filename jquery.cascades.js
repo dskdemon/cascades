@@ -22,8 +22,8 @@
      * 
      * Example:
      * options = {
-     *   trigger: 'selector', // Use only for event type 'scroll'. Means an item
-     *                           that will start a cascad of crossing.
+     *   trigger: 'selector', // Use only for event type 'scroll'.
+     *   triggerHeight: 30,   // Height in percent (of window height), when cascad will be run of crossing, 
      *   [
      *     {
             selector: '.portfolio-slider-block',
@@ -46,12 +46,19 @@
           // Get trigger element
           var $trigger = (event.data.trigger !== undefined) ? $(event.data.trigger) : console.error("When use event type 'scroll' you must define triger CSS selector");
 
-          var triggerTop = $trigger.offset().top;
-          var scrollTop = $(this).scrollTop();
+          if ($trigger.offset() !== undefined) {
 
-          if (scrollTop >= triggerTop) {
-            run(event.data.cascade);
-          }
+            var triggerTop = $trigger.offset().top;
+
+            var triggerHeight = $(this).height() * event.data.triggerHeight / 100;
+
+            var scrollTop = $(this).scrollTop() + triggerHeight;
+
+            if (scrollTop >= triggerTop) {
+              run(event.data.cascade);
+            }
+
+          };
           
         break;
 
